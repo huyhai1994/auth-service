@@ -1,3 +1,69 @@
+server:
+  port: 20000
+spring:
+  application:
+    name: auth-service-test
+    hikari:
+      maximum-pool-size: 5
+      minimum-idle: 1
+      idle-timeout: 300000
+      connection-timeout: 30000
+      max-lifetime: 30000
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: false
+logging:
+  level:
+    org:
+      hibernate:
+        SQL: DEBUG
+        type:
+          descriptor:
+            sql:
+              BasicBinder: TRACE
+        orm:
+          results: TRACE
+      springframework:
+        security: TRACE
+      apache:
+        kafka:
+          clients:
+            producer:
+              ProducerConfig: DEBUG
+  kafka:
+    bootstrap-servers:
+      - ${KAFKA_ENDPOINT}
+
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+      acks: all
+
+      properties:
+        enable.idempotence: true
+        max.in.flight.requests.per.connection: 5
+        delivery.timeout.ms: 30000
+        request.timeout.ms: 10000
+        max.block.ms: 30000
+    admin:
+      fail-fast: true
+      auto-create: false
+      operation-timeout: 5s
+
+    client-id: auth-service
+user-register:
+  topic: "test.notifications.register-events.v1"
 security:
+  jwt:
+    secret-key: GpP5Ko/lSAodfqg3B/TJpcijh06eST3P2M0pn6ZTIYY=
+    access-token-expiration: 15m
+    issuer: auth-service
+  identity-hash:
+    secret-key: eWeHbeT1wLynBeNl/odFQUTNONHIPXyNTd6la4puAdc=
+  login-rate-limit:
+    username-ip-max-attempts: 10
+    window-duration: 1m
   login-attempt:
-    failure-attempts: 10
+    failure-attempts: 5
+    lock-duration: 60m
