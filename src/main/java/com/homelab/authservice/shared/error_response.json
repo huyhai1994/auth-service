@@ -1,0 +1,8 @@
+{
+  "success": false,
+  "data": null,
+  "error": {
+    "code": "FILE_NOT_FOUND",
+    "message": "File not found"
+  }
+}

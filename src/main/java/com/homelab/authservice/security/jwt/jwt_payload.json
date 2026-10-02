@@ -1,0 +1,8 @@
+{
+  "jti": "fbcbdbf3-f0af-448c-a489-4a1fffc7fec0",
+  "iss": "file-upload-service",
+  "sub": "hai1994",
+  "iat": 1786076444,
+  "exp": 1786077344,
+  "authorities": []
+}

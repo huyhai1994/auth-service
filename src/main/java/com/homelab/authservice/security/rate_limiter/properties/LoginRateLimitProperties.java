@@ -1,0 +1,15 @@
+package com.homelab.authservice.security.rate_limiter.properties;
+
+import lombok.Getter;
+import lombok.Setter;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+
+import java.time.Duration;
+
+@ConfigurationProperties(prefix = "security.login-rate-limit")
+@Getter
+@Setter
+public class LoginRateLimitProperties {
+    Integer usernameIpMaxAttempts;
+    Duration windowDuration;
+}

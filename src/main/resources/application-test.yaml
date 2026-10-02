@@ -1,0 +1,3 @@
+security:
+  login-attempt:
+    failure-attempts: 10
