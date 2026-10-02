@@ -24,6 +24,7 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
 import support.AbstractIntegrationTest;
 import support.MockPasswordBuilder;
+import support.MockUserBuilder;
 import support.RaceConditionSimulator;
 import tools.jackson.core.type.TypeReference;
 
@@ -215,7 +216,7 @@ class SecurityIntegrationTest extends AbstractIntegrationTest {
     }
 
     private void persistAnValidUser() {
-        User user = new User(NORMALIZED_USERNAME, passwordEncoder.encode(MockPasswordBuilder.RAW_PASSWORD));
+        User user = new User(NORMALIZED_USERNAME, passwordEncoder.encode(MockPasswordBuilder.RAW_PASSWORD), MockUserBuilder.VALID_EMAIL);
         userRepository.saveAndFlush(user);
     }
 
