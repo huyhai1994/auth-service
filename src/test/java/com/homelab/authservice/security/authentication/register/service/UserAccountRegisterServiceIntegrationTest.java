@@ -1,6 +1,8 @@
 package com.homelab.authservice.security.authentication.register.service;
 
 import com.homelab.authservice.security.authentication.register.dto.RegisterRequest;
+import com.homelab.authservice.security.authentication.shared.entity.User;
+import com.homelab.authservice.security.authentication.shared.repository.RoleRepository;
 import com.homelab.authservice.security.authentication.shared.repository.UserRepository;
 import com.homelab.authservice.security.notification.dto.OutboxEventStatus;
 import com.homelab.authservice.security.notification.entity.OutboxEvent;
@@ -14,6 +16,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 import support.AbstractIntegrationTest;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -36,6 +39,9 @@ class UserAccountRegisterServiceIntegrationTest extends AbstractIntegrationTest 
     @MockitoSpyBean
     OutBoxEventRepository outBoxEventRepository;
 
+    @Autowired
+    RoleRepository roleRepository;
+
     @BeforeEach
     void cleanUp() {
         outBoxEventRepository.deleteAllInBatch();
@@ -43,7 +49,22 @@ class UserAccountRegisterServiceIntegrationTest extends AbstractIntegrationTest 
     }
 
     @Test
+    void save_whenRoleNotPersist_thenUserNotSaved() {
+        RegisterRequest request = validRegisterRequest();
+
+        roleRepository.deleteAllInBatch();
+        assertThat(roleRepository.count()).isZero();
+        assertThatThrownBy(() -> userAccountRegisterService.register(request));
+
+        assertThat(userRepository.findAll().size()).isZero();
+        List<OutboxEvent> events = outBoxEventRepository.findAll();
+        assertThat(events.size()).isZero();
+
+    }
+
+    @Test
     void save_whenUserAccountSaved_thenOutboxEventSaved() {
+
         RegisterRequest request = validRegisterRequest();
 
         userAccountRegisterService.register(request);

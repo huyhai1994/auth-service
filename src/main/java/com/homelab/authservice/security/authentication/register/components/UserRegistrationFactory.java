@@ -2,7 +2,10 @@ package com.homelab.authservice.security.authentication.register.components;
 
 import com.homelab.authservice.security.authentication.register.dto.RegisterRequest;
 import com.homelab.authservice.security.authentication.register.service.UsernameVerifyService;
+import com.homelab.authservice.security.authentication.shared.entity.Role;
+import com.homelab.authservice.security.authentication.shared.entity.RoleType;
 import com.homelab.authservice.security.authentication.shared.entity.User;
+import com.homelab.authservice.security.authentication.shared.repository.RoleRepository;
 import com.homelab.authservice.security.authentication.shared.service.NormalizeUsernameService;
 import com.homelab.authservice.security.authentication.shared.service.PasswordVerifyService;
 import lombok.RequiredArgsConstructor;
@@ -17,6 +20,7 @@ public class UserRegistrationFactory {
     private final UsernameVerifyService usernameVerifyService;
     private final PasswordVerifyService passwordVerifyService;
     private final PasswordEncoder passwordEncoder;
+    private final RoleRepository roleRepository;
 
     public User createUser(RegisterRequest request) {
         String normalizedUsername = normalizeUsernameService.normalizeUsername(request.username());
@@ -26,10 +30,13 @@ public class UserRegistrationFactory {
 
         String passwordHash = passwordEncoder.encode(request.password());
 
+        Role role = roleRepository.findRoleByName(RoleType.USER).orElseThrow();
+
         return new User(
                 normalizedUsername,
                 passwordHash,
-                request.emailAddress()
+                request.emailAddress(),
+                role
         );
 
     }

@@ -7,6 +7,8 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.UUID;
 
 @Entity
@@ -51,6 +53,14 @@ public class User {
     @Column(name = "email_address")
     private String emailAddress;
 
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+            name = "user_role",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "role_id")
+    )
+    private Set<Role> roles = new HashSet<>();
+
     protected User() {
     }
 
@@ -69,4 +79,12 @@ public class User {
         this.failedLoginCount = 0;
     }
 
+    public User(String username, String passwordHash, String emailAddress, Role role) {
+        this.username = username;
+        this.passwordHash = passwordHash;
+        this.emailAddress = emailAddress;
+        this.status = UserStatus.ACTIVE;
+        this.failedLoginCount = 0;
+        this.roles.add(role);
+    }
 }
