@@ -1,7 +1,10 @@
 package com.homelab.authservice.security.jwt.filter;
 
 import com.homelab.authservice.security.authentication.login.dto.LoginResponse;
+import com.homelab.authservice.security.authentication.shared.entity.Role;
+import com.homelab.authservice.security.authentication.shared.entity.RoleType;
 import com.homelab.authservice.security.authentication.shared.entity.User;
+import com.homelab.authservice.security.authentication.shared.repository.RoleRepository;
 import com.homelab.authservice.security.authentication.shared.repository.UserRepository;
 import com.homelab.authservice.shared.error_code.ErrorCode;
 import com.homelab.authservice.shared.json.JacksonUtils;
@@ -59,6 +62,9 @@ class SecurityIntegrationTest extends AbstractIntegrationTest {
     UserRepository userRepository;
 
     @Autowired
+    RoleRepository roleRepository;
+
+    @Autowired
     MockMvc mockMvc;
 
     @Autowired
@@ -91,7 +97,9 @@ class SecurityIntegrationTest extends AbstractIntegrationTest {
     @Test
     void login_whenAfter5FailedRequest_thenNextRequestWillBeLocked() throws Exception {
 
-        persistAnValidUser();
+        Role role = roleRepository.findRoleByName(RoleType.USER).orElseThrow();
+        persistAnValidUser(role);
+
         User persistedUser = userRepository
                 .findByUsername(NORMALIZED_USERNAME)
                 .orElseThrow();
@@ -143,7 +151,8 @@ class SecurityIntegrationTest extends AbstractIntegrationTest {
 
     @Test
     void performLogin_thenReturnAccessToken() throws Exception {
-        persistAnValidUser();
+        Role role = roleRepository.findRoleByName(RoleType.USER).orElseThrow();
+        persistAnValidUser(role);
         String accessToken = performLoginAndGetAccessToken();
         assertThat(accessToken).isNotNull();
 
@@ -152,7 +161,8 @@ class SecurityIntegrationTest extends AbstractIntegrationTest {
     @Test
     void protectedEndpoint_whenAccessTokenIsValid_thenAuthenticateUser()
             throws Exception {
-        persistAnValidUser();
+        Role role = roleRepository.findRoleByName(RoleType.USER).orElseThrow();
+        persistAnValidUser(role);
         String accessToken = performLoginAndGetAccessToken();
         performProtectedRequest(accessToken).andExpect(status().isOk());
     }
@@ -171,7 +181,8 @@ class SecurityIntegrationTest extends AbstractIntegrationTest {
 
     @Test
     void protectedEndpoint_whenInvalidSignature_thenReturnUnAuthorized() throws Exception {
-        persistAnValidUser();
+        Role role = roleRepository.findRoleByName(RoleType.USER).orElseThrow();
+        persistAnValidUser(role);
 
         String accessToken = performLoginAndGetAccessToken();
         String tokenWithInvalidSignature = tamperSignature(accessToken);
@@ -180,7 +191,8 @@ class SecurityIntegrationTest extends AbstractIntegrationTest {
 
     @Test
     void protectedEndpoint_whenTokenExpired_thenReturnUnAuthorized() throws Exception {
-        persistAnValidUser();
+        Role role = roleRepository.findRoleByName(RoleType.USER).orElseThrow();
+        persistAnValidUser(role);
         when(clock.instant()).thenReturn(NOW.minus(Duration.ofHours(1)));
 
         String expiredToken = performLoginAndGetAccessToken();
@@ -215,8 +227,8 @@ class SecurityIntegrationTest extends AbstractIntegrationTest {
                 + tamperedSignature;
     }
 
-    private void persistAnValidUser() {
-        User user = new User(NORMALIZED_USERNAME, passwordEncoder.encode(MockPasswordBuilder.RAW_PASSWORD), MockUserBuilder.VALID_EMAIL);
+    private void persistAnValidUser(Role role) {
+        User user = new User(NORMALIZED_USERNAME, passwordEncoder.encode(MockPasswordBuilder.RAW_PASSWORD), MockUserBuilder.VALID_EMAIL, role);
         userRepository.saveAndFlush(user);
     }
 

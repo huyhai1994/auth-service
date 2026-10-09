@@ -3,6 +3,11 @@ package com.homelab.authservice.security.authentication.shared.entity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
+import lombok.experimental.Tolerate;
+
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "roles")
@@ -23,6 +28,14 @@ public class Role {
     )
     @Enumerated(EnumType.STRING)
     private RoleType name;
+
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+            name = "permission_roles",
+            joinColumns = @JoinColumn(name = "role_id"),
+            inverseJoinColumns = @JoinColumn(name = "permission_id")
+    )
+    private Set<Permission> permissions = new HashSet<>();
 
     public Role(RoleType name) {
         this.name = name;

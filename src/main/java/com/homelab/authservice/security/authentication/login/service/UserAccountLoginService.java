@@ -63,6 +63,7 @@ public class UserAccountLoginService {
         }
     }
 
+    // TODO: checkLock IS NOT THREAD SAFETY
     private void checkLock(String normalizedUsername) {
         if (loginAttemptService.checkLock(normalizedUsername)) {
             log.error("USER_ACCOUNT_LOCKED username={}", normalizedUsername);

@@ -1,5 +1,6 @@
 package com.homelab.authservice.security.authentication.shared.repository;
 
+import com.homelab.authservice.security.authentication.shared.entity.Role;
 import com.homelab.authservice.security.authentication.shared.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -8,12 +9,19 @@ import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 
 public interface UserRepository extends JpaRepository<User, UUID> {
 
     boolean existsByUsername(String username);
 
+    @Query("""
+            SELECT DISTINCT u
+            FROM User u
+            LEFT JOIN FETCH u.roles r
+                LEFT JOIN FETCH r.permissions p
+            """)
     Optional<User> findByUsername(String username);
 
     boolean existsByUsernameAndLockedUntilAfter(
@@ -75,4 +83,5 @@ public interface UserRepository extends JpaRepository<User, UUID> {
     int resetFailureCount(@Param("username") String username,
                           @Param("now") LocalDateTime now);
 
+    User findUserByRoles(Set<Role> roles);
 }
