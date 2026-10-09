@@ -33,6 +33,9 @@ class RoleRepositoryIntegrationTest extends AbstractIntegrationTest {
     @Autowired
     PasswordEncoder passwordEncoder;
 
+    @Autowired
+    PermissionRepository permissionRepository;
+
     @BeforeEach
     void setUp() {
         Role role = roleRepository.findRoleByName(RoleType.USER).orElseThrow();
@@ -43,6 +46,7 @@ class RoleRepositoryIntegrationTest extends AbstractIntegrationTest {
     void tearDown() {
         userRepository.deleteAllInBatch();
         roleRepository.deleteAllInBatch();
+        permissionRepository.deleteAllInBatch();
     }
 
     @Test
