@@ -27,4 +27,9 @@ public class Permission {
     public Permission(PermissionType permissionType) {
         this.type = permissionType;
     }
+
+    public Permission() {
+
+    }
+
 }
