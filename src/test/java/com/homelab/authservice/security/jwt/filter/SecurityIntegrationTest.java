@@ -152,7 +152,8 @@ class SecurityIntegrationTest extends AbstractIntegrationTest {
     @Test
     void performLogin_thenReturnAccessToken() throws Exception {
         Role role = roleRepository.findRoleByName(RoleType.USER).orElseThrow();
-        persistAnValidUser(role);
+        persistAnValidUser(MockUserBuilder.NORMALIZED_USERNAME, role);
+        persistAnValidUser(MockUserBuilder.NORMALIZED_USERNAME + "2", role);
         String accessToken = performLoginAndGetAccessToken();
         assertThat(accessToken).isNotNull();
 
@@ -229,6 +230,11 @@ class SecurityIntegrationTest extends AbstractIntegrationTest {
 
     private void persistAnValidUser(Role role) {
         User user = new User(NORMALIZED_USERNAME, passwordEncoder.encode(MockPasswordBuilder.RAW_PASSWORD), MockUserBuilder.VALID_EMAIL, role);
+        userRepository.saveAndFlush(user);
+    }
+
+    private void persistAnValidUser(String username, Role role) {
+        User user = new User(username, passwordEncoder.encode(MockPasswordBuilder.RAW_PASSWORD), MockUserBuilder.VALID_EMAIL, role);
         userRepository.saveAndFlush(user);
     }
 
