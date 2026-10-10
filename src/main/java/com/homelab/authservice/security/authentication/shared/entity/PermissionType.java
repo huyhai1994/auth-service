@@ -6,6 +6,6 @@ import lombok.RequiredArgsConstructor;
 @Getter
 @RequiredArgsConstructor
 public enum PermissionType {
-    DELETE("delete"), DOWNLOAD("download"), UPLOAD("upload");
+    DELETE("DELETE"), DOWNLOAD("DOWNLOAD"), UPLOAD("UPLOAD");
     private final String type;
 }

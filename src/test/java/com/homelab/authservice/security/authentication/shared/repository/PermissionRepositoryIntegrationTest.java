@@ -36,9 +36,6 @@ class PermissionRepositoryIntegrationTest extends AbstractIntegrationTest {
     RoleRepository roleRepository;
 
     @Autowired
-    PermissionRepository permissionRepository;
-
-    @Autowired
     PasswordEncoder passwordEncoder;
 
     @Test
