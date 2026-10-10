@@ -3,10 +3,13 @@ package com.homelab.authservice.security.authentication.shared.entity;
 import lombok.RequiredArgsConstructor;
 import org.jspecify.annotations.Nullable;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 public class SecurityUser implements UserDetails {
@@ -15,8 +18,29 @@ public class SecurityUser implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of();
+
+        List<GrantedAuthority> roles = user.getRoles()
+                .stream()
+                .map(Role::getName)
+                .map(RoleType::name)
+                .map(s -> "ROLE_" + s)
+                .<GrantedAuthority>map(SimpleGrantedAuthority::new)
+                .collect(Collectors.toCollection(ArrayList::new));
+
+        List<GrantedAuthority> permissions = user.getRoles()
+                .stream()
+                .flatMap(r -> r.getPermissions().stream())
+                .map(Permission::getType)
+                .map(PermissionType::getType)
+                .map(s -> "SCOPE_" + s)
+                .<GrantedAuthority>map(SimpleGrantedAuthority::new)
+                .toList();
+
+        roles.addAll(permissions);
+
+        return roles;
     }
+
 
     @Override
     public @Nullable String getPassword() {

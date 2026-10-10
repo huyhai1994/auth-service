@@ -3,7 +3,6 @@ package com.homelab.authservice.security.authentication.shared.entity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
 
 @Entity
 @Table(name = "permissions")
@@ -24,4 +23,8 @@ public class Permission {
     )
     @Enumerated(EnumType.STRING)
     private PermissionType type;
+
+    public Permission(PermissionType permissionType) {
+        this.type = permissionType;
+    }
 }
