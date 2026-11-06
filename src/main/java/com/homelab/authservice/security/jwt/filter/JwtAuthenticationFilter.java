@@ -19,6 +19,8 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.AuthenticationEntryPoint;
@@ -76,11 +78,17 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     payload.authorities()
             );
 
+            List<? extends GrantedAuthority> authorities = payload
+                    .authorities()
+                    .stream()
+                    .map(SimpleGrantedAuthority::new)
+                    .toList();
+
             Authentication authentication =
                     UsernamePasswordAuthenticationToken.authenticated(
                             principal,
                             null,
-                            List.of()
+                            authorities
                     );
 
             SecurityContext context =
@@ -89,7 +97,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             context.setAuthentication(authentication);
             SecurityContextHolder.setContext(context);
 
-        } catch (NullPointerException | JwtException exception) {
+        } catch (JwtException exception) {
             SecurityContextHolder.clearContext();
 
             AuthenticationException authenticationException =

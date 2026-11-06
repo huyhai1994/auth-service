@@ -84,7 +84,6 @@ class SecurityIntegrationTest extends AbstractIntegrationTest {
     }
 
     @Test
-    @WithMockUser("test")
     void protectedEndpoint_whenTokenIsMissing_thenReturnUnauthorized()
             throws Exception {
 

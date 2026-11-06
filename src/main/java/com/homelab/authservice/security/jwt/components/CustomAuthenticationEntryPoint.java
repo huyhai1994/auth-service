@@ -16,6 +16,11 @@ import java.io.IOException;
 
 @Component
 @RequiredArgsConstructor
+/**
+ * AuthenticationEntryPoint is used to send an HTTP response
+ * that requests credentials from a client.
+ * {@link https://docs.spring.io/spring-security/reference/servlet/authentication/architecture.html#servlet-authentication-authenticationentrypoint}
+ * */
 public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint {
     private final ObjectMapper objectMapper;
 
@@ -32,7 +37,7 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
 
         objectMapper.writeValue(
                 response.getOutputStream(),
-                ApiResponse.failure(error )
+                ApiResponse.failure(error)
         );
 
 

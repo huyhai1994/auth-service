@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 @Slf4j
 public class IPAddressDetector {
     public String detect(HttpServletRequest request) {
-        String ipAddress = request.getLocalAddr();
+        String ipAddress = request.getRemoteAddr();
         log.info(
                 "Login rate-limit identity: remoteAddr={}, detectedIp={}",
                 request.getRemoteAddr(),

@@ -33,7 +33,7 @@ public class SecurityUser implements UserDetails {
                 .map(Permission::getType)
                 .map(PermissionType::getType)
                 .map(s -> "SCOPE_" + s)
-                .<GrantedAuthority>map(SimpleGrantedAuthority::new)
+                .map(s -> (GrantedAuthority) new SimpleGrantedAuthority(s))
                 .toList();
 
         roles.addAll(permissions);
@@ -69,6 +69,6 @@ public class SecurityUser implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return UserDetails.super.isEnabled();
+        return user.getStatus() == UserStatus.ACTIVE;
     }
 }
